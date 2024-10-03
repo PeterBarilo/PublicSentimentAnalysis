@@ -1,9 +1,10 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+
 *{
   padding: 0;
   margin: 0;
-  font-family: Lora;
+  font-family: Space Grotesk;
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
@@ -21,4 +22,28 @@ a{
 .app{
   width: 100%;
   margin: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #2b2d42; 
+  border-radius: 5px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #fd6600; 
+  border-radius: 5px;
+  border: 2px solid #2b2d42; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #be4c00;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #fd6600 #2b2d42;
 }
