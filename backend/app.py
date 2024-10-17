@@ -4,12 +4,20 @@ import pandas as pd
 from flask import Flask, request, jsonify
 from itertools import cycle
 import random
+import boto3
+from botocore.exceptions import NoCredentialsError
+import json
+from dotenv import load_dotenv
+
+
 
 app = Flask(__name__)
 
 # Define the path to the scraper script
 SCRAPER_PATH = os.path.join(os.getcwd(), 'selenium-twitter-scraper', 'scraper', '__main__.py')
 TWEETS_DIR = os.path.join(os.getcwd(), 'tweets')
+
+load_dotenv()
 
 # Proxy pool (replace these with valid proxies)
 proxies = [
@@ -118,6 +126,14 @@ proxies = [
 random.shuffle(proxies)
 proxy_pool = cycle(proxies)
 
+session = boto3.Session(
+    aws_access_key_id=os.getenv("AWS_KEY"),
+    aws_secret_access_key=os.getenv("AWS_SECRET"),
+    region_name='us-east-2' 
+)
+
+s3 = session.resource('s3')
+
 @app.route('/scrape', methods=['POST'])
 def scrape_tweets():
     try:
@@ -151,6 +167,15 @@ def scrape_tweets():
         latest_csv_file = max([os.path.join(TWEETS_DIR, f) for f in csv_files], key=os.path.getmtime)
         print(f"Latest CSV file found: {latest_csv_file}")
 
+        # Define the S3 file key (path in the bucket)
+        s3_file_key = f'tweets/{os.path.basename(latest_csv_file)}'
+
+        # Upload the file to S3
+        upload_success = upload_file_to_s3(latest_csv_file, 'scraped-tweets-bucket312212', s3_file_key, session)
+
+        if not upload_success:
+            return jsonify({'success': False, 'message': 'Failed to upload to S3'}), 500
+
         # Read the CSV content and convert it to a DataFrame
         df = pd.read_csv(latest_csv_file)
 
@@ -165,6 +190,22 @@ def scrape_tweets():
         return jsonify({'success': False, 'message': str(e), 'stderr': e.stderr}), 500
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
+    
+
+
+def upload_file_to_s3(file_path, bucket_name, s3_file_key, session):
+    # Initialize the client using the session
+    s3_client = session.client('s3')
+    
+    try:
+        # Use the s3_client to upload the file
+        s3_client.upload_file(file_path, bucket_name, s3_file_key)
+        print(f"File uploaded to S3: {s3_file_key}")
+        return True
+    except Exception as e:
+        print(f"Error uploading file to S3: {e}")
+        return False
 
 if __name__ == '__main__':
     app.run(debug=True)
