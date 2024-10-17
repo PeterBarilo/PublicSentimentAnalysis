@@ -1,7 +1,9 @@
-from flask import Flask, request, jsonify
-import subprocess
 import os
+import subprocess
+import pandas as pd
+from flask import Flask, request, jsonify
 from itertools import cycle
+import random
 
 app = Flask(__name__)
 
@@ -113,7 +115,7 @@ proxies = [
     '156.228.104.150:3128'
 ]
 
-# Create a cycle for rotating proxies
+random.shuffle(proxies)
 proxy_pool = cycle(proxies)
 
 @app.route('/scrape', methods=['POST'])
@@ -140,23 +142,29 @@ def scrape_tweets():
         # Run the command using subprocess
         subprocess.run(command, check=True)
 
-        # Construct the path to the generated CSV
-        csv_file = os.path.join(TWEETS_DIR, f'{keyword.replace(" ", "_").lower()}.csv')
-
-        # Check if the file exists
-        if os.path.exists(csv_file):
-            with open(csv_file, 'r') as f:
-                tweet_data = f.read()
-            return jsonify({'success': True, 'data': tweet_data}), 200
-        else:
+        # Find the most recent CSV file in the tweets directory
+        csv_files = [f for f in os.listdir(TWEETS_DIR) if f.endswith('.csv')]
+        if not csv_files:
             return jsonify({'success': False, 'message': 'No data found'}), 404
+
+        # Get the latest CSV file based on modification time
+        latest_csv_file = max([os.path.join(TWEETS_DIR, f) for f in csv_files], key=os.path.getmtime)
+        print(f"Latest CSV file found: {latest_csv_file}")
+
+        # Read the CSV content and convert it to a DataFrame
+        df = pd.read_csv(latest_csv_file)
+
+        # Convert the DataFrame to a list of dictionaries (JSON format)
+        tweet_data = df.to_dict(orient='records')
+
+        # Return the data as JSON
+        return jsonify({'success': True, 'data': tweet_data}), 200
 
     except subprocess.CalledProcessError as e:
         # Capture and display error details
         return jsonify({'success': False, 'message': str(e), 'stderr': e.stderr}), 500
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
