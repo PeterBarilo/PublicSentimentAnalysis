@@ -42,6 +42,8 @@ const Home = () => {
                 className="carousel-image"
                 style={{ backgroundImage: `url(${image})` }}
               >
+                <div className="image-overlay"></div>
+
                 <div className="banner-text">
                   <h1>Explore the World of Public Opinion</h1>
                   <p>View real-time sentiment analysis on hot debate topics from around the world.</p>
@@ -50,6 +52,7 @@ const Home = () => {
               </div>
             </div>
           ))}
+
         </div>
         <button className="prev-button" onClick={prevSlide}>
           &#10094;
@@ -66,6 +69,7 @@ const Home = () => {
               onClick={() => goToSlide(index)}
             ></div>
           ))}
+          
         </div>
       </header>
 

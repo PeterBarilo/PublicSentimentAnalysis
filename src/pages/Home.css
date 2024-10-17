@@ -36,6 +36,17 @@
     justify-content: center;
     position: relative;
 }
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2b2d42; /* The overlay color */
+    opacity: 0.4; /* Control how transparent the overlay is */
+    z-index: 1; /* Make sure the overlay appears above the image */
+  }
   
 .carousel-image {
     background-size: cover;
@@ -43,10 +54,12 @@
     background-repeat: no-repeat;
     width: 100%;
     height: 100%;
+    position: relative; /* Important for overlay */
+
 }
 
 .banner-text {
-    background-color: rgb(24, 25, 36, .7);
+    background-color: rgb(24, 25, 36, .8);
     z-index: 2;
     padding: 20px 20px;
     border-radius: 5px;
