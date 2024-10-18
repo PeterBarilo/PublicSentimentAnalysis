@@ -1,0 +1,52 @@
+/* Container for the sentiment bar */
+.sentiment-bar-container {
+    display: flex;
+    width: 100%;
+    height: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    position: relative;
+  }
+  
+  /* Each sentiment bar */
+  .sentiment-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    transition: width 0.5s ease;
+    height: 100%;
+    position: relative;
+  }
+  
+  /* Specific styles for each sentiment */
+  .positive {
+    background: linear-gradient(90deg, #6dd400, #3b9200);
+  }
+  
+  .neutral {
+    background: linear-gradient(90deg, #d1d1d1, #888888);
+  }
+  
+  .negative {
+    background: linear-gradient(90deg, #ff4d4d, #b30000);
+  }
+  
+  /* Label inside the bar */
+  .sentiment-label {
+    z-index: 1;
+    color: white;
+    padding: 0 5px;
+    white-space: nowrap;
+  }
+  
+  /* Ensure the label appears only if the bar is wide enough */
+  .sentiment-bar span {
+    display: block;
+  }
+  

@@ -8,10 +8,12 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 import json
 from dotenv import load_dotenv
-
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 # Define the path to the scraper script
 SCRAPER_PATH = os.path.join(os.getcwd(), 'selenium-twitter-scraper', 'scraper', '__main__.py')
@@ -158,26 +160,24 @@ def scrape_tweets():
         # Run the command using subprocess
         subprocess.run(command, check=True)
 
-        # Find the most recent CSV file in the tweets directory
-        csv_files = [f for f in os.listdir(TWEETS_DIR) if f.endswith('.csv')]
-        if not csv_files:
-            return jsonify({'success': False, 'message': 'No data found'}), 404
+        # Find the CSV file that matches the keyword
+        csv_file_path = os.path.join(TWEETS_DIR, f'{keyword.replace(" ", "_").lower()}.csv')
+        if not os.path.exists(csv_file_path):
+            return jsonify({'success': False, 'message': f'No CSV file found for keyword: {keyword}'}), 404
 
-        # Get the latest CSV file based on modification time
-        latest_csv_file = max([os.path.join(TWEETS_DIR, f) for f in csv_files], key=os.path.getmtime)
-        print(f"Latest CSV file found: {latest_csv_file}")
+        print(f"CSV file found: {csv_file_path}")
 
         # Define the S3 file key (path in the bucket)
-        s3_file_key = f'tweets/{os.path.basename(latest_csv_file)}'
+        s3_file_key = f'tweets/{os.path.basename(csv_file_path)}'
 
         # Upload the file to S3
-        upload_success = upload_file_to_s3(latest_csv_file, 'scraped-tweets-bucket312212', s3_file_key, session)
+        upload_success = upload_file_to_s3(csv_file_path, 'scraped-tweets-bucket312212', s3_file_key, session)
 
         if not upload_success:
             return jsonify({'success': False, 'message': 'Failed to upload to S3'}), 500
 
         # Read the CSV content and convert it to a DataFrame
-        df = pd.read_csv(latest_csv_file)
+        df = pd.read_csv(csv_file_path)
 
         # Convert the DataFrame to a list of dictionaries (JSON format)
         tweet_data = df.to_dict(orient='records')
@@ -191,7 +191,54 @@ def scrape_tweets():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-    
+
+aws_access_key = os.getenv("AWS_KEY")
+aws_secret_key = os.getenv("AWS_SECRET")
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
+    region_name="us-east-2"
+)
+
+@app.route('/sentiment-results', methods=['GET'])
+def get_sentiment_results():
+    # Get the keyword from the query parameter (this will be your topic)
+    keyword = request.args.get('file_name')
+
+    if not keyword:
+        return jsonify({'success': False, 'message': 'file_name parameter (keyword) is required'}), 400
+
+    try:
+        # List objects in the 'sentiment-results/' folder to find the correct file
+        response = s3_client.list_objects_v2(Bucket='scraped-tweets-bucket312212', Prefix='sentiment-results/')
+        
+        if 'Contents' not in response:
+            return jsonify({'success': False, 'message': 'No sentiment results found in S3'}), 404
+        
+        # Search for the correct file in S3 (e.g., file containing the keyword in the name)
+        matching_files = [obj['Key'] for obj in response['Contents'] if keyword in obj['Key']]
+        
+        if not matching_files:
+            return jsonify({'success': False, 'message': f'No sentiment file found for keyword: {keyword}'}), 404
+        
+        # Assuming we take the latest matching file if there are multiple
+        latest_file_key = max(matching_files, key=lambda x: x.split('/')[-1])
+
+        # Fetch the sentiment results file from S3
+        response = s3_client.get_object(Bucket='scraped-tweets-bucket312212', Key=latest_file_key)
+        sentiment_data = json.loads(response['Body'].read())
+
+        # Extract the sentiments and return them as an array
+        sentiments = [item['Sentiment'] for item in sentiment_data['sentiments']]
+
+        return jsonify({'success': True, 'sentiments': sentiments}), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error retrieving sentiment results: {e}'}), 500
+
+
 
 
 def upload_file_to_s3(file_path, bucket_name, s3_file_key, session):
