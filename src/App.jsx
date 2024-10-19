@@ -7,6 +7,7 @@ import Analysis from './pages/Analysis'
 import Topics from './pages/Topics'
 import Archive from './pages/Archive'
 import About from './pages/About'
+import TopicPage from './pages/TopicPage'
 const App = () => {
   return (
     <div className='app'>
@@ -16,7 +17,7 @@ const App = () => {
         <Route path='/archive' element={<Archive/>}></Route>
         <Route path='/topics' element={<Topics/>}></Route>
         <Route path='/about' element={<About/>}></Route>
-
+        <Route path="/topic/:topic" element={<TopicPage />} />
       </Routes>
       <Footer></Footer>
     </div>

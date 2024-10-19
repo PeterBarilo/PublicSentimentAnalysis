@@ -87,7 +87,6 @@ const Home = () => {
         </div>
 
         <div className="services-container">
-          <h2>Our Services</h2>
           <hr />
 
           <div className="services-grid">

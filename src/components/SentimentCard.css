@@ -1,0 +1,24 @@
+.sentiment-card {
+    background-color: #181924;
+    padding: 20px;
+    margin: 50px 0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px #181924;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .topic{
+    font-weight: 500;
+    font-size: 25px;
+    color:#fd6600;
+    margin-bottom: 25px;
+  }
+  
+  .sentiment-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 0px 20px  #181924;
+  }
+  
+
+  

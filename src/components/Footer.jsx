@@ -37,7 +37,6 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} Debate Insights. All Rights Reserved.</p>
-        <p>Powered By DeveloperSecure.com</p>
       </div>
     </footer>
   );

@@ -1,0 +1,29 @@
+.topics{
+    padding:10px 10vw;
+    background-color: #2b2d42;
+    color: #f9f9f9;
+    font-weight: 500;
+}
+
+.topics hr{
+    position: relative;
+    margin-left: 0px;
+    justify-self: center;
+    width: 30px;
+    margin-top: -5px;
+    margin-bottom: 20px;
+    border: 2px solid #fd6600;
+}
+
+.currentHot{
+    margin-top: 5vh;
+    margin-bottom: 10px;
+    color: #fd6600;
+    text-align: center;
+}
+
+.topics-sub{
+    margin-top: 50px;
+    font-size: 20px;
+    text-align: center;
+}

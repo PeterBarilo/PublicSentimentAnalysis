@@ -105,7 +105,6 @@ proxies = [
     '156.228.104.150:3128'
 ]
 
-# Function to check if a proxy is valid
 def is_valid_proxy(proxy):
     try:
         response = requests.get("http://www.google.com", proxies={"http": f"http://{proxy}", "https": f"http://{proxy}"}, timeout=1)  # Lower timeout
@@ -114,7 +113,6 @@ def is_valid_proxy(proxy):
         return None
 
 
-# Validate proxies in parallel
 def validate_proxies(proxies):
     valid_proxies = []
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -130,15 +128,12 @@ def validate_proxies(proxies):
                 print(f"Error validating proxy {proxy}: {e}")
     return valid_proxies
 
-# Get valid proxies
 valid_proxies = validate_proxies(proxies)
 
-# Check if there are valid proxies
 if not valid_proxies:
     print("No valid proxies found. Exiting...")
     exit()
 
-# Set up proxy pool
 proxy_pool = cycle(valid_proxies)
 
 def scrape_with_proxy(url):
@@ -160,10 +155,9 @@ def scrape_with_proxy(url):
     
     return None
 
-# Test the scraper
-url = "https://api.twitter.com/2/tweets/search/recent"  # Example API endpoint
-for _ in range(10):  # Try 10 different proxies
+url = "https://api.twitter.com/2/tweets/search/recent"  
+for _ in range(10): 
     result = scrape_with_proxy(url)
     if result:
         print(result)
-        break  # If successful, break the loop
+        break  

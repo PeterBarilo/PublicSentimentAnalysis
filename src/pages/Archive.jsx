@@ -3,8 +3,8 @@ import './Archive.css'
 
 const Archive = () => {
   return (
-    <div>
-      
+    <div className='archive'>
+      <h2 className='archive-title'>Currently Empty!</h2>
     </div>
   )
 }

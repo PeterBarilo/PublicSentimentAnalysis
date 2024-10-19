@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SentimentBar from '../components/SentimentBar';
+import SentimentCard from '../components/SentimentCard';
+import './Topics.css'
+
 const Topics = () => {
   const [topics] = useState([
-    'Donald Trump',
-    'Kamala Harris',
+    'Election 2024',
+    'Gaza Conflict',
+    'Ukraine Conflict',
+    
   ]);
+
+
+  const topicMapping = {
+    'Election 2024': ['Donald Trump', 'Kamala Harris', 'Abortion'],
+  };
+  
 
   const [sentimentData, setSentimentData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -53,7 +64,7 @@ const fetchSentimentResults = async (topic, retryCount = 0, maxRetries = 20) => 
     try {
       const response = await axios.post('/scrape', {
         keyword: topic,
-        tweet_count: 10  
+        tweet_count: 25
       });
 
       if (response.status === 200) {        
@@ -69,24 +80,37 @@ const fetchSentimentResults = async (topic, retryCount = 0, maxRetries = 20) => 
   useEffect(() => {
     setLoading(true);
     topics.forEach(async (topic) => {
-      await scrapeTweetsForTopic(topic);
+      if (!sentimentData[topic]) {
+        await scrapeTweetsForTopic(topic);
+      }
     });
     setLoading(false);
-  }, [topics]);
+  }, [topics, sentimentData]);
 
   return (
-    <div>
-    <h1>Hot Topics Sentiment Analysis</h1>
+    <div className='topics'>
+    <h1 className='currentHot'>Current Hot Topics</h1>
+    <hr />
+    <h2 className='topics-sub'>Select one of the current Hot Topics below see more related sentiment analysis</h2>
     {topics.map((topic) => (
-      <div key={topic} style={{ marginBottom: '20px' }}>
-        <h3>{topic}</h3>
+      <div key={topic} className='sentimentCard'>
         {sentimentData[topic] ? (
-          <SentimentBar sentiments={sentimentData[topic]} />
+          <SentimentCard topic={topic} overallSentiment={sentimentData[topic]} loading={false}  topicMapping={topicMapping}/>
         ) : (
-          <p>Loading sentiment data...</p>
+          <SentimentCard topic={topic} overallSentiment={sentimentData[topic]} loading={true}/>
         )}
       </div>
     ))}
+    {/* {topics.map((topic) => (
+      <div key={topic} className='sentiment'>
+        <h3>{topic}</h3>
+        {sentimentData[topic] ? (
+          <SentimentCard sentiments={sentimentData[topic]} />
+        ) : (
+          <p className='loading'>Loading sentiment data...</p>
+        )}
+      </div>
+    ))} */}
   </div>
   );
 };

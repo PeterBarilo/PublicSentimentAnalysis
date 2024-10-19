@@ -15,13 +15,11 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Define the path to the scraper script
 SCRAPER_PATH = os.path.join(os.getcwd(), 'selenium-twitter-scraper', 'scraper', '__main__.py')
 TWEETS_DIR = os.path.join(os.getcwd(), 'tweets')
 
 load_dotenv()
 
-# Proxy pool (replace these with valid proxies)
 proxies = [
     '156.228.88.80:3128',
     '154.214.1.21:3128',
@@ -139,54 +137,54 @@ s3 = session.resource('s3')
 @app.route('/scrape', methods=['POST'])
 def scrape_tweets():
     try:
-        # Get the keyword and tweet count from the request
         data = request.get_json()
         keyword = data.get('keyword')
-        tweet_count = data.get('tweet_count', 10)  # Default to 10 tweets if not provided
+        tweet_count = data.get('tweet_count', 10) 
 
-        # Get the next proxy from the pool
+          # Construct the S3 key for the sentiment result file
+        sentiment_file_key = f'sentiment-results/{keyword.replace(" ", "_").lower()}.csv-sentiment.json'
+
+        # Check if the sentiment file already exists in S3
+        try:
+            s3_client.head_object(Bucket='scraped-tweets-bucket312212', Key=sentiment_file_key)
+            print(f"Sentiment file already exists for {keyword}. No need to scrape.")
+            return jsonify({'success': True, 'message': 'Sentiment file already exists.'}), 200
+        except s3_client.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                print(f"Sentiment file not found for {keyword}. Proceeding with scraping.")
+            else:
+                return jsonify({'success': False, 'message': 'Error checking sentiment file in S3.'}), 500
+
         proxy = next(proxy_pool)
         print(f"Using proxy: {proxy}")
 
-        # Construct the command to run the scraper with the rotating proxy
         command = [
             'python', SCRAPER_PATH,
             '-t', str(tweet_count),
             '-q', keyword,
             '--top',
-            '-p', proxy  # Add the proxy argument here
+            '-p', proxy 
         ]
 
-        # Run the command using subprocess
         subprocess.run(command, check=True)
 
-        # Find the CSV file that matches the keyword
         csv_file_path = os.path.join(TWEETS_DIR, f'{keyword.replace(" ", "_").lower()}.csv')
         if not os.path.exists(csv_file_path):
             return jsonify({'success': False, 'message': f'No CSV file found for keyword: {keyword}'}), 404
 
         print(f"CSV file found: {csv_file_path}")
-
-        # Define the S3 file key (path in the bucket)
         s3_file_key = f'tweets/{os.path.basename(csv_file_path)}'
-
-        # Upload the file to S3
         upload_success = upload_file_to_s3(csv_file_path, 'scraped-tweets-bucket312212', s3_file_key, session)
 
         if not upload_success:
             return jsonify({'success': False, 'message': 'Failed to upload to S3'}), 500
 
-        # Read the CSV content and convert it to a DataFrame
         df = pd.read_csv(csv_file_path)
-
-        # Convert the DataFrame to a list of dictionaries (JSON format)
         tweet_data = df.to_dict(orient='records')
 
-        # Return the data as JSON
         return jsonify({'success': True, 'data': tweet_data}), 200
 
     except subprocess.CalledProcessError as e:
-        # Capture and display error details
         return jsonify({'success': False, 'message': str(e), 'stderr': e.stderr}), 500
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -204,33 +202,26 @@ s3_client = boto3.client(
 
 @app.route('/sentiment-results', methods=['GET'])
 def get_sentiment_results():
-    # Get the keyword from the query parameter (this will be your topic)
     keyword = request.args.get('file_name')
 
     if not keyword:
         return jsonify({'success': False, 'message': 'file_name parameter (keyword) is required'}), 400
 
     try:
-        # List objects in the 'sentiment-results/' folder to find the correct file
         response = s3_client.list_objects_v2(Bucket='scraped-tweets-bucket312212', Prefix='sentiment-results/')
         
         if 'Contents' not in response:
             return jsonify({'success': False, 'message': 'No sentiment results found in S3'}), 404
         
-        # Search for the correct file in S3 (e.g., file containing the keyword in the name)
         matching_files = [obj['Key'] for obj in response['Contents'] if keyword in obj['Key']]
         
         if not matching_files:
             return jsonify({'success': False, 'message': f'No sentiment file found for keyword: {keyword}'}), 404
         
-        # Assuming we take the latest matching file if there are multiple
         latest_file_key = max(matching_files, key=lambda x: x.split('/')[-1])
 
-        # Fetch the sentiment results file from S3
         response = s3_client.get_object(Bucket='scraped-tweets-bucket312212', Key=latest_file_key)
         sentiment_data = json.loads(response['Body'].read())
-
-        # Extract the sentiments and return them as an array
         sentiments = [item['Sentiment'] for item in sentiment_data['sentiments']]
 
         return jsonify({'success': True, 'sentiments': sentiments}), 200
@@ -242,11 +233,9 @@ def get_sentiment_results():
 
 
 def upload_file_to_s3(file_path, bucket_name, s3_file_key, session):
-    # Initialize the client using the session
     s3_client = session.client('s3')
     
     try:
-        # Use the s3_client to upload the file
         s3_client.upload_file(file_path, bucket_name, s3_file_key)
         print(f"File uploaded to S3: {s3_file_key}")
         return True
