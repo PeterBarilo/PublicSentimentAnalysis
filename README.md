@@ -22,13 +22,13 @@
 
   <p align="center">
     
-    <br />
-    <a href="https://github.com"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com">LINK TO SITE</a>
-    ·
-    <a href="https://github.com">Report Bug</a>
+  <br />
+  <a href="https://github.com"><strong>Explore the docs »</strong></a>
+  <br />
+  <br />
+  <a href="https://github.com">LINK TO SITE</a>
+  ·
+  <a href="https://github.com">Report Bug</a>
   </p>
 </div>
 
