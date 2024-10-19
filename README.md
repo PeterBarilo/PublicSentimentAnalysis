@@ -1,13 +1,13 @@
 # **Public Sentiment Insights** 🎯
 
-This is a web application that provides real-time sentiment analysis on hot debate topics gathered from online sources. The app features a dynamic carousel for showcasing current events and detailed insights on the debates, allowing users to explore public opinions and trends in a modern, user-friendly interface.
+This is a web application that provides sentiment analysis on hot debate topics gathered from online sources. It also allows users to enter a custom keyword or phrase to perform sentiment analysis on.
 
-The plan is to use X (Twitter) as the initial source.
+The current source for public data is X(Twitter)
 
 ## **Key Features** ✨
-- **Real-Time Sentiment Analysis**: Analyze public opinions on trending debate topics.
+- **On_Demand Sentiment Analysis**: Analyze public opinions on trending debate topics.
 - **Responsive Design**: Optimized for desktop and mobile devices.
-- **Engaging Visuals**: Dynamic charts, hover effects, and sliding images for a rich user experience.
+- **Engaging Visuals**: Dynamic charts, hover effects, and easy to digest data for a rich user experience.
 
 ---
 
@@ -19,13 +19,14 @@ The plan is to use X (Twitter) as the initial source.
   - CSS3 (with transitions and responsive layouts)
 - **Backend**: 
   - Django
-  - AWS Comprehend, AWS Lambda, AWS SQS, AWS DynamoDB
+  - AWS Comprehend, AWS Lambda, AWS S3, AWS EC2
 
 ---
 
 ## **Installation** 🛠️
 
 To run this app locally, follow the instructions below:
+(Code only, need to set up AWS account and services yourself, lambda code included)
 
 1. **Clone the repository**:
 
