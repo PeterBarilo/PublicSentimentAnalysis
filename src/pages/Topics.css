@@ -1,6 +1,6 @@
 .topics{
     padding:10px;
-    background-color: #2b2d42;
+    background-color: #181924;
     color: #f9f9f9;
     font-weight: 500;
 }
@@ -19,7 +19,8 @@
 }
 
 .topics-sub{
-    margin-top: 80px;
+    margin-top: 30px;
+    margin-bottom: 20px;
     font-size: 20px;
     text-align: center;
 }
@@ -30,16 +31,25 @@
     margin-bottom: 20px;
   }
 
+  .cards-container{
+    background-color: #2b2d42;
+    padding: 20px 20px;
+    margin-bottom: -10px;
+    margin-left: -10px;
+    margin-right: -10px;
+
+  }
+
   .category-button {
     background-color: #181924;
     color: #f9f9f9;
     border: 1px solid #fd6600;
     padding: 10px 20px;
-    width: 150px;
-    margin: 0 10px;
+    width: 100%;
+    margin: -15px 0px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
-    border-radius: 5px;
+    border-radius: 0px;
   }
 .sentimentCard{
     padding: 0px 10vw;
@@ -57,13 +67,14 @@
 }
 
 .topic-navbar {
+    margin: 0px -10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #181924;
     padding: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Adds a nice shadow effect */
-    position: sticky; /* Navbar sticks to top on scroll */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+    position: sticky;
     top: 0;
     z-index: 100;
   }

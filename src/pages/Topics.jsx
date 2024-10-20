@@ -96,6 +96,8 @@ const Topics = () => {
     <div className='topics'>
       <h1 className='currentHot'>Current Hot Topics</h1>
       <hr />
+      <h2 className='topics-sub'>Select one of the current Hot Topics below to see more related sentiment analysis</h2>
+
 
       {/* Navigation Bar for Categories */}
       <div className="topic-navbar">
@@ -109,8 +111,7 @@ const Topics = () => {
           </button>
         ))}
       </div>
-
-      <h2 className='topics-sub'>Select one of the current Hot Topics below to see more related sentiment analysis</h2>
+      <div className='cards-container'>
       {filteredTopics.map((topicObj) => (
         <div key={topicObj.name} className='sentimentCard'>
           {sentimentData[topicObj.name] ? (
@@ -120,6 +121,7 @@ const Topics = () => {
           )}
         </div>
       ))}
+      </div>
     </div>
   );
 };

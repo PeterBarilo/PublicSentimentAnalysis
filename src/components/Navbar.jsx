@@ -16,9 +16,9 @@ const Navbar = () => {
         <li>
           <Link to="/archive">Archive</Link>
         </li>
-        <li>
+        {/* <li>
           <Link to="/about">About</Link>
-        </li>
+        </li> */}
         <hr />
         <li>
           <img className='search-icon' src={assets.search} alt="" />
