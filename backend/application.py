@@ -12,8 +12,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 
-app = Flask(__name__)
-CORS(app)
+application = Flask(__name__)
+CORS(application)
 
 SCRAPER_PATH = os.path.join(os.getcwd(), 'selenium-twitter-scraper', 'scraper', '__main__.py')
 TWEETS_DIR = os.path.join(os.getcwd(), 'tweets')
@@ -134,7 +134,7 @@ session = boto3.Session(
 
 s3 = session.resource('s3')
 
-@app.route('/scrape', methods=['POST'])
+@application.route('/scrape', methods=['POST'])
 def scrape_tweets():
     try:
         data = request.get_json()
@@ -200,7 +200,7 @@ s3_client = boto3.client(
     region_name="us-east-2"
 )
 
-@app.route('/sentiment-results', methods=['GET'])
+@application.route('/sentiment-results', methods=['GET'])
 def get_sentiment_results():
     keyword = request.args.get('file_name')
 
@@ -230,7 +230,9 @@ def get_sentiment_results():
         return jsonify({'success': False, 'message': f'Error retrieving sentiment results: {e}'}), 500
 
 
-
+@application.route('/health', methods=['GET'])
+def health_check():
+    return 'OK', 200
 
 def upload_file_to_s3(file_path, bucket_name, s3_file_key, session):
     s3_client = session.client('s3')
@@ -244,4 +246,4 @@ def upload_file_to_s3(file_path, bucket_name, s3_file_key, session):
         return False
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    application.run(host='0.0.0.0', port=5000)  # Ensure this runs on all IPs

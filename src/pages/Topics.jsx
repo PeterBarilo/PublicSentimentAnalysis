@@ -31,7 +31,7 @@ const Topics = () => {
 
   const fetchSentimentResults = async (topic, retryCount = 0, maxRetries = 20) => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/sentiment-results', {
+      const response = await axios.get('http://psa-backend4.us-east-2.elasticbeanstalk.com/sentiment-results', {
         params: { file_name: `${topic.replace(" ", "_").toLowerCase()}.csv-sentiment.json` }
       });
 
@@ -58,7 +58,7 @@ const Topics = () => {
   const scrapeTweetsForTopic = async (topic) => {
     if (!fetchedTopics.includes(topic)) {
       try {
-        const response = await axios.post('/scrape', {
+        const response = await axios.post('http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', {
           keyword: topic,
           tweet_count: 25
         });
