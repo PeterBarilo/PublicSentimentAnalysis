@@ -50,10 +50,18 @@ const TopicPage = () => {
 
   const scrapeTweetsForSubtopic = async (subtopic) => {
     try {
-      const response = await axios.post('http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', {
-        keyword: subtopic,
-        tweet_count: 10
-      });
+      const response = await axios.post(
+        'http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', 
+        {
+          keyword: subtopic,
+          tweet_count: 5
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (response.status === 200) {
         fetchSentimentResults(subtopic);

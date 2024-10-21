@@ -58,10 +58,18 @@ const Topics = () => {
   const scrapeTweetsForTopic = async (topic) => {
     if (!fetchedTopics.includes(topic)) {
       try {
-        const response = await axios.post('http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', {
-          keyword: topic,
-          tweet_count: 25
-        });
+        const response = await axios.post(
+          'http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', 
+          {
+            keyword: topic,
+            tweet_count: 5
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
         if (response.status === 200) {
           fetchSentimentResults(topic);
