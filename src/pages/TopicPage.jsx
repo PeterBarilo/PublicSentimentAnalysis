@@ -16,12 +16,13 @@ const TopicPage = () => {
 
   const fetchSentimentResults = async (subtopic, retryCount = 0, maxRetries = 20) => {
     try {
-      const response = await axios.get('http://psa-backend4.us-east-2.elasticbeanstalk.com/sentiment-results', {
+      const response = await axios.get('https://answers-accompanying-cuba-opera.trycloudflare.com/sentiment-results', {
         params: { file_name: `${subtopic.replace(" ", "_").toLowerCase()}.csv-sentiment.json` }
       });
-
+      console.log('hi')
       if (response.status === 200 && response.data.success) {
         const sentiment = response.data.sentiments;
+        console.log(response.data.sentiments)
         setSubtopicSentiments((prevData) => ({
           ...prevData,
           [subtopic]: sentiment
@@ -51,7 +52,7 @@ const TopicPage = () => {
   const scrapeTweetsForSubtopic = async (subtopic) => {
     try {
       const response = await axios.post(
-        'http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', 
+        'https://answers-accompanying-cuba-opera.trycloudflare.com/scrape', 
         {
           keyword: subtopic,
           tweet_count: 5

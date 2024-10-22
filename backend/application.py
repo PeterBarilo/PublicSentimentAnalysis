@@ -13,7 +13,7 @@ from flask_cors import CORS
 
 
 application = Flask(__name__)
-CORS(application, supports_credentials=True)
+CORS(application, resources={r"/*": {"origins": "*"}})
 
 SCRAPER_PATH = os.path.join(os.getcwd(), 'selenium-twitter-scraper', 'scraper', '__main__.py')
 TWEETS_DIR = os.path.join(os.getcwd(), 'tweets')
@@ -135,23 +135,10 @@ session = boto3.Session(
 
 s3 = session.resource('s3')
 
-@application.after_request
-def after_request(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    return response
-
 
 @application.route('/scrape', methods=['POST'])
 def scrape_tweets():
-    if request.method == 'OPTIONS':
-        # Preflight request, return necessary headers
-        response = jsonify({'message': 'CORS preflight successful'})
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'POST'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return response, 200
+
     try:
         data = request.get_json()
         keyword = data.get('keyword')
@@ -262,4 +249,4 @@ def upload_file_to_s3(file_path, bucket_name, s3_file_key, session):
         return False
 
 if __name__ == '__main__':
-    application.run(debug=True) # Ensure this runs on all IPs
+    application.run(host="0.0.0.0", port=5000) # Ensure this runs on all IPs

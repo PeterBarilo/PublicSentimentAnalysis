@@ -31,12 +31,13 @@ const Topics = () => {
 
   const fetchSentimentResults = async (topic, retryCount = 0, maxRetries = 20) => {
     try {
-      const response = await axios.get('http://psa-backend4.us-east-2.elasticbeanstalk.com/sentiment-results', {
+      const response = await axios.get('https://answers-accompanying-cuba-opera.trycloudflare.com/sentiment-results', {
         params: { file_name: `${topic.replace(" ", "_").toLowerCase()}.csv-sentiment.json` }
       });
 
-      if (response.status === 200 && response.data.success) {
+      if (response.status === 200) {
         const sentiment = response.data.sentiments;
+        console.log(response.data)
         setSentimentData((prevData) => ({
           ...prevData,
           [topic]: sentiment
@@ -59,7 +60,7 @@ const Topics = () => {
     if (!fetchedTopics.includes(topic)) {
       try {
         const response = await axios.post(
-          'http://psa-backend4.us-east-2.elasticbeanstalk.com/scrape', 
+          'https://answers-accompanying-cuba-opera.trycloudflare.com/scrape', 
           {
             keyword: topic,
             tweet_count: 5
