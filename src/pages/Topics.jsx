@@ -114,7 +114,6 @@ const Topics = () => {
     scrapeAndFetch();
   }, [topics]);
 
-  // Filter topics based on selected category
   const filteredTopics = topics.filter(topic =>
     selectedCategory === 'All' || topic.category === selectedCategory
   );
@@ -126,7 +125,6 @@ const Topics = () => {
       <h2 className='topics-sub'>Select one of the current Hot Topics below to see more related sentiment analysis</h2>
 
 
-      {/* Navigation Bar for Categories */}
       <div className="topic-navbar">
         {categories.map((category) => (
           <button

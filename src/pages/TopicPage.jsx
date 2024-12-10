@@ -6,7 +6,7 @@ import './TopicPage.css'
 import LoadingSpinner from '../components/LoadingSpinner'; 
 
 const TopicPage = () => {
-  const { topic } = useParams(); // Get the topic from the URL
+  const { topic } = useParams();
   const location = useLocation();
   const { subtopics } = location.state || { subtopics: [] };
   const [subtopicSentiments, setSubtopicSentiments] = useState({});
@@ -86,7 +86,7 @@ const TopicPage = () => {
 
   return (
     <div className='topicpage'>
-      <h1>Explore Topics Related to <em>{topic}</em></h1> {/* Display the topic name */}
+      <h1>Explore Topics Related to <em>{topic}</em></h1> 
       <hr />
       {subtopics.map((subtopic) => (
         <div className='subtopic-container' key={subtopic}>
