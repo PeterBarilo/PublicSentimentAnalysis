@@ -16,7 +16,7 @@ const TopicPage = () => {
 
   const fetchSentimentResults = async (subtopic, retryCount = 0, maxRetries = 20) => {
     try {
-      const response = await axios.get('https://answers-accompanying-cuba-opera.trycloudflare.com/sentiment-results', {
+      const response = await axios.get('https://initial-helps-mx-persistent.trycloudflare.com/sentiment-results', {
         params: { file_name: `${subtopic.replace(" ", "_").toLowerCase()}.csv-sentiment.json` }
       });
       console.log('hi')
@@ -52,7 +52,7 @@ const TopicPage = () => {
   const scrapeTweetsForSubtopic = async (subtopic) => {
     try {
       const response = await axios.post(
-        'https://answers-accompanying-cuba-opera.trycloudflare.com/scrape', 
+        'https://initial-helps-mx-persistent.trycloudflare.com/scrape', 
         {
           keyword: subtopic,
           tweet_count: 5
